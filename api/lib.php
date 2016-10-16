@@ -23,7 +23,6 @@ function rq_error($msg=false)
 
   if ( is_array($msg) ) {
     if ( count($msg) ) {
-      echo "MERGE<br>";
       $GLOBALS['lvs_ui_error'] = array_merge($GLOBALS['lvs_ui_error'], $msg);
     }
   }
