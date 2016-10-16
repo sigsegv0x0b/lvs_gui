@@ -10,7 +10,7 @@
   ctype_digit($s['port']) OR trigger_error("[ {$s['port']} ] invalid port", E_USER_ERROR);
   ctype_digit($c['port']) OR trigger_error("[ {$c['port']} ] invalid port", E_USER_ERROR);
   
-  $cmd = "sudo /sbin/ipvsadm -d -t {$c['addr']}:{$c['port']} -r {$s['addr']}:{$s['port']}";
+  $cmd = 'sudo /sbin/ipvsadm -d -t '.escapeshellarg("{$c['addr']}:{$c['port']}").' -r '.escapeshellarg("{$s['addr']}:{$s['port']}").' 2>&1';
   
   exec($cmd, $out, $status);
   

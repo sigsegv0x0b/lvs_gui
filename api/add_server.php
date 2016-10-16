@@ -16,11 +16,12 @@
   
   if ( $i['weight'] ) {
     ctype_digit($i['weight']) OR trigger_error("[ {$i['weight']} ] invalid weight", E_USER_ERROR);
-    
-    $weight = " -w {$i['weight']} ";
-  } else 
+    $weight = ' -w '.escapeshellarg($i['weight']);
+  } else {
     $weight = '';
-  
+  }
+
+  $forward = '';
   switch ( $i['forward'] ) {
     case 'Masq':
       $forward = '-m';
@@ -35,7 +36,7 @@
       trigger_error("[ {$i['forward']} ] invalid forwarding mode", E_USER_ERROR);
   }
   
-  $cmd = "sudo /sbin/ipvsadm -a -t {$c['addr']}:{$c['port']} -r {$i['addr']}:{$i['port']} $forward $weight";
+  $cmd = 'sudo /sbin/ipvsadm -a -t '.escapeshellarg("{$c['addr']}:{$c['port']}").' -r '.escapeshellarg("{$i['addr']}:{$i['port']}")." $forward $weight 2>&1";
   exec($cmd, $out, $status);
-  
+    
   echo json_encode( array('cmd'=>$cmd, 'status'=>$status, 'msg'=>$out) );

@@ -1,4 +1,4 @@
-<html>
+	<html>
 <head>
 <style>
 .form {
@@ -29,7 +29,7 @@
 	<td id="proto"></td>
 	<td id="addr"></td>
 	<td id="port"></td>
-	<td id="algo"></td>
+	<td id="scheduler"></td>
 	<td onclick="h_onclick(event)"><span action="add_server_form">Add</span></td>
 </tr>
 <tr>
@@ -49,7 +49,7 @@
 					<td id="port"></td>
 					<td id="forward"></td>
 					<td id="weight"></td>
-					<td id="action" onclick="h_onclick(event)"><span applyto="server" action="delete_server">Del</span></td>
+					<td id="action" onclick="h_onclick(event)"><span action="delete_server">Del</span></td>
 				</tr>
 			</template>
 		</table>
@@ -57,38 +57,82 @@
 
 </tr>
 </template>
+<div id="input_area">
 
-<div id="add_server" class="table">
-<form name="add_server_form">
-<h3 id="add_server_cap">Add Server: <label id="addr"></label>:<label id="port"></label></h3>
-<div class="formrow">
-	<div class="formcap">Address:</div>
-	<div class="forminput"><input type="text" id="addr" size=10></div>
-</div>
+	<div c_level="editor" id="add_server" class="table" style="display:none">
+		<form name="add_server_form">
+		<h3 id="add_server_cap">Add Server: <label id="addr"></label>:<label id="port"></label></h3>
+		<div class="formrow">
+			<div class="formcap">Address:</div>
+			<div class="forminput"><input type="text" id="addr" size=10></div>
+		</div>
 
-<div class="formrow">
-	<div class="formcap">Port:</div> 
-	<div class="forminput"><input type="text" id="port" size=5></div>
-</div>
+		<div class="formrow">
+			<div class="formcap">Port:</div> 
+			<div class="forminput"><input type="text" id="port" size=5></div>
+		</div>
 
-<div class="formrow">
-	<div class="formcap"">Forward:</div>
-	<div class="forminput"><select id="forward"><option value="Route">Direct_Route</option><option value="Masq">Masq/Nat</option><option value="Tunnel">Tunneling</option></select></div>
-</div>
+		<div class="formrow">
+			<div class="formcap">Forward:</div>
+			<div class="forminput"><select id="forward"><option value="Route">Direct Route (DSR)</option><option value="Masq">Masq/Nat</option><option value="Tunnel">Tunneling</option></select></div>
+		</div>
 
-<div class="formrow">
-	<div class="formcap">Weight:</div> 
-	<div class="forminput"><input type="text" id="weight" size=5></div>
-</div>
+		<div class="formrow">
+			<div class="formcap">Weight:</div> 
+			<div class="forminput"><input type="text" id="weight" size=5></div>
+		</div>
 
-<div class="formrow" style="border: 1px solid red; height: 10px;"></div>
+		<div class="formrow" style="border: 1px solid red; height: 10px;"></div>
 
-<div class="formrow" style="column-span: all">
-	<div class="formcap"></div>
-	<div align=left class="forminput"><input action="cancel_form" onclick="h_onclick(event)" type="button" id="cancel" value="Cancel"> <input action="add_server" type="button" onclick="h_onclick(event)" id="add" value="Add"></div>
-</div>
+		<div class="formrow" style="column-span: all">
+			<div class="formcap"></div>
+			<div align=left class="forminput"><input action="cancel_form" onclick="h_onclick(event)" type="button" id="cancel" value="Cancel"> <input action="add_server" type="button" onclick="h_onclick(event)" id="add" value="Add"></div>
+		</div>
 
-</form>
+		</form>
+	</div>
+	
+	<div c_level="editor" id="add_cluster" class="table" style="display:none">
+		<form name="add_cluster_form">
+		<h3 id="add_server_cap">Add Cluster</h3>
+		<div class="formrow">
+			<div class="formcap">Address:</div>
+			<div class="forminput"><input type="text" id="addr" size=10></div>
+		</div>
+
+		<div class="formrow">
+			<div class="formcap">Port:</div> 
+			<div class="forminput"><input type="text" id="port" size=5></div>
+		</div>
+
+		<div class="formrow">
+			<div class="formcap">Scheduler:</div>
+			<div class="forminput">
+				<select id="scheduler">
+					<option value="rr">Round Robin</option>
+					<option value="wrr">Weighted Round Robin</option>
+					<option value="lc">Least-Connection</option>
+					<option value="wlc">Weighted Least-Connection</option>
+					<option value="lblc">Locality-Based Least-Connection</option>
+					<option value="lblcr">Locality-Based Least-Connection with Replication</option>
+					<option value="dh">Destination Hashing</option>
+					<option value="sh">Source Hashing</option>
+					<option value="sed">Shortest Expected Delay</option>
+					<option value="nq">Never Queue</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="formrow" style="border: 1px solid red; height: 10px;"></div>
+
+		<div class="formrow" style="column-span: all">
+			<div class="formcap"></div>
+			<div align=left class="forminput"><input action="cancel_form" onclick="h_onclick(event)" type="button" id="cancel" value="Cancel"> <input action="add_cluster" type="button" onclick="h_onclick(event)" id="add" value="Add"></div>
+		</div>
+
+		</form>
+	</div>
+
 </div>
 
 <script>
@@ -118,31 +162,34 @@ function h_onclick(e)
 			break;
 		case 'add_server_form':
 			var ref = $(e.target).closest('tr').data('ref');
-			//console.log(ref);
 			$("div[id='add_server']").find('form').data('ref', ref);
+			fill_fields(ref.cluster, $("#add_server_cap label, div[id='add_server'] input[id='port']"));
 			
-			fill_fields(ref.cluster, $('#add_server_cap label'));
-			fill_fields(ref.cluster, $("div[id='add_server'] input[id='port']"));
+			$("div[id='add_server'").css('display', 'inline');
+			
 			if ( ref.cluster.servers.length ) {
-				fill_fields(ref.cluster.servers[0], $("#add_server select[id='forward']"));
+				fill_fields(ref.cluster.servers[0], $("div[id='add_server'] select[id='forward'],div[id='add_server'] input[id='addr']"));
+				
+				var addr = $("div[id='add_server'] input[id='addr']").val();
+				var regExp = /^(.+\.)/;
+				var match = regExp.exec(addr);
+				if ( match.length > 1 ) {
+					$("div[id='add_server'] input[id='addr']").val(match[1]);
+				}
+				
+				$("div[id='add_server'] input[id='addr']").focus();
 			}
+			
 			break;
 		case 'add_server':
-			var input = {};
-			$(target).closest('form').find("input[type='text'], select").each(function(){
-				input[$(this).attr('id')] = $(this).val();
-			});
-			
+			var input = collect_values($(target).closest('form').find("input[type='text'], select"));
+
 			action['input'] = input;
 			action['ref'] = $(target).closest("form").data('ref');
 			
-			console.log('PREAJAX');
-			
-			$.ajax({url: 'api/' +action.action + backend  , method: 'GET', data: action, dataType: 'json'}).done(function(c)
-			{
+			$.ajax({url: 'api/' +action.action + backend  , method: 'GET', data: action, dataType: 'json'}).done(function(c){
 				console.log(c);
 				load_list();
-				
 				
 				//make it easy to enter lots of ips quick
 				var addr = $(target).closest('form').find("input[id='addr']").val();
@@ -155,10 +202,26 @@ function h_onclick(e)
 				$(target).closest('form').find("input[id='addr']").trigger('focus');
 				
 			});
-						
+			break;
+		case 'add_cluster_form':
+			$("div[id='add_cluster'").css('display', 'inline');
+			break;
+		case 'add_cluster':
+			var input = collect_values($(target).closest('form').find("input[type='text'], select"));
+			action['input'] = input;
+			
+			$.ajax({url: 'api/' + action.action + backend, method: 'GET', data: action, dataType: 'json'}).done(function(c){
+				console.log(c);
+				$("div[id='add_cluster' input[id='cancel']").trigger('click');
+				load_list();
+			});
+			
 			break;
 		case 'cancel_form':
 			var form = $(target).closest('form');
+			var div = $(target).closest("div[c_level='editor']");
+			$(div).css('display', 'none');
+			
 			$(form).removeData('ref');
 			$(form).find('input[type=text],select').each(function(){
 				$(this).val('')
@@ -170,6 +233,16 @@ function h_onclick(e)
 	
 }
 
+function collect_values(dom)
+{
+var input = {};
+
+	$(dom).each(function(){
+		input[$(this).attr('id')] = $(this).val();
+	});
+	
+	return input;
+}
 
 function fill_fields(obj, dom)
 {
@@ -224,12 +297,13 @@ $(document).ready(function()
 
 </script>
 <input onclick="load_list()" value="reload" type="button">
+<input onclick="h_onclick(event)" action="add_cluster_form" value="Add Cluster" type="button">
 <table id="cluster_list" border=1>
 <tr id="heading">
 	<th>Protocol</th>
 	<th>Address</th>
 	<th>Port</th>
-	<th>Algorithm</th>
+	<th>Scheduler</th>
 	<th>Action</th>
 </tr>
 

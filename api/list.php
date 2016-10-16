@@ -23,7 +23,7 @@ $server_ref = false;
 
 while ( $i = trim(fgets($pipes[1])) ) {
    if ( preg_match('#^([A-Z]+)\s+([^\s:]+):([^\s]+)\s+([^\s]+)#', $i, $r) ) {
-       $lvs['clusters'][] = array('proto'=>$r[1], 'addr'=>$r[2], 'port'=>$r[3], 'algo'=>$r[4], 'servers'=>array());
+       $lvs['clusters'][] = array('proto'=>$r[1], 'addr'=>$r[2], 'port'=>$r[3], 'scheduler'=>$r[4], 'servers'=>array());
        $server_ref =  &$lvs['clusters'][count($lvs['clusters'])-1]['servers'];
        continue;
    }
