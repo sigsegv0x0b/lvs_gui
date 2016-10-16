@@ -37,7 +37,4 @@
   }
   
   $cmd = 'sudo /sbin/ipvsadm -a -t '.escapeshellarg("{$c['addr']}:{$c['port']}").' -r '.escapeshellarg("{$i['addr']}:{$i['port']}")." $forward $weight 2>&1";
-  exec($cmd, $out, $status);
-  
-  do_shell_cmd($cmd);    
-  echo json_encode( array('cmd'=>$cmd, 'status'=>rq_error_count(), 'msg'=>rq_get_errors()) );
+  echo do_shell_cmd($cmd);    

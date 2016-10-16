@@ -11,8 +11,4 @@
   ctype_digit($c['port']) OR rq_error("[ cluster_port={$c['port']} ] invalid port");
   
   $cmd = 'sudo /sbin/ipvsadm -d -t '.escapeshellarg("{$c['addr']}:{$c['port']}").' -r '.escapeshellarg("{$s['addr']}:{$s['port']}").' 2>&1';
-  
-  exec($cmd, $out, $status);
-    
-  do_shell_cmd($cmd);    
-  echo json_encode( array('cmd'=>$cmd, 'status'=>rq_error_count(), 'msg'=>rq_get_errors()) );
+  echo do_shell_cmd($cmd);    

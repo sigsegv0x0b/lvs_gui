@@ -31,14 +31,21 @@ form {
 }
 
 div[c_level="editor"] {
-	border: 1px dashed;
 	background: WhiteSmoke;
 }
 
 #input_area {
-	border: 1px dashed;
+//	border: 1px dashed;
 }
 
+tr[id="cluster_spacer"] td {
+	height: 25px;
+	border-top: 1px dashed;
+}
+
+table {
+//	border-collapse: collapse;
+}
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 </head>
@@ -74,6 +81,9 @@ div[c_level="editor"] {
 	</td>
 
 </tr>
+<tr id="cluster_spacer">
+	<td colspan=5></td>
+</tr>
 </template>
 <div id="input_area">
 	<div c_level="editor" id="add_server" class="table" style="display:none">
@@ -99,9 +109,9 @@ div[c_level="editor"] {
 			<div class="forminput"><input type="text" id="weight" size=5></div>
 		</div>
 
-		<div class="formrow" style="border: 1px solid red; height: 10px;"></div>
+		<div class="formrow"></div>
 
-		<div class="formrow" style="column-span: all">
+		<div class="formrow">
 			<div class="formcap"></div>
 			<div align=left class="forminput"><input action="cancel_form" onclick="h_onclick(event)" type="button" id="cancel" value="Cancel"> <input action="add_server" type="button" onclick="h_onclick(event)" id="add" value="Add"></div>
 		</div>
@@ -140,9 +150,9 @@ div[c_level="editor"] {
 			</div>
 		</div>
 
-		<div class="formrow" style="border: 1px solid red; height: 10px;"></div>
+		<div class="formrow"></div>
 
-		<div class="formrow" style="column-span: all">
+		<div class="formrow">
 			<div class="formcap"></div>
 			<div align=left class="forminput"><input action="cancel_form" onclick="h_onclick(event)" type="button" id="cancel" value="Cancel"> <input action="add_cluster" type="button" onclick="h_onclick(event)" id="add" value="Add"></div>
 		</div>
@@ -239,7 +249,7 @@ function h_onclick(e)
 				
 				if ( req_error(c) ) return;
 				
-				$("div[id='add_cluster' input[id='cancel']").trigger('click');
+				$("div[id='add_cluster'] input[id='cancel']").trigger('click');
 				
 			});
 			

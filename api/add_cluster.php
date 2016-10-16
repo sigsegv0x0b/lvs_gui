@@ -23,6 +23,5 @@
   }
   
   $cmd = "sudo /sbin/ipvsadm -A -t ".escapeshellarg("{$i['addr']}:{$i['port']}")." -s ".escapeshellarg($i['scheduler']).' 2>&1';
-  do_shell_cmd($cmd);  
+  echo do_shell_cmd($cmd);  
   
-  echo json_encode( array('cmd'=>$cmd, 'status'=>rq_error_count(), 'msg'=>rq_get_errors()) );

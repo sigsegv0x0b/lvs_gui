@@ -48,8 +48,8 @@ function do_shell_cmd($cmd)
   if ( !rq_error() ) {
     exec($cmd, $out, $status);
     rq_error($out);
-    return $status;
   }
   
-  return false;
+  return json_encode( array('cmd'=>$cmd, 'status'=>rq_error_count(), 'msg'=>rq_get_errors()) );
+    
 }
