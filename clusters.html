@@ -40,6 +40,7 @@
 				<th>Server</th>
 				<th>Port</th>
 				<th>Forward</th>
+				<th>Weight</th>
 				<th>Action</th>
 			</tr>
 			<template id="server_row">
@@ -47,6 +48,7 @@
 					<td id="addr"></td>
 					<td id="port"></td>
 					<td id="forward"></td>
+					<td id="weight"></td>
 					<td id="action" onclick="h_onclick(event)"><span applyto="server" action="delete_server">Del</span></td>
 				</tr>
 			</template>
@@ -72,6 +74,11 @@
 <div class="formrow">
 	<div class="formcap"">Forward:</div>
 	<div class="forminput"><select id="forward"><option value="Route">Direct_Route</option><option value="Masq">Masq/Nat</option><option value="Tunnel">Tunneling</option></select></div>
+</div>
+
+<div class="formrow">
+	<div class="formcap">Weight:</div> 
+	<div class="forminput"><input type="text" id="weight" size=5></div>
 </div>
 
 <div class="formrow" style="border: 1px solid red; height: 10px;"></div>

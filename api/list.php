@@ -28,8 +28,8 @@ while ( $i = trim(fgets($pipes[1])) ) {
        continue;
    }
       
-   if ( preg_match('#^\s*->\s+([^\s:]+):([^\s]+)\s+([^\s]+)#', $i, $r) ) {
-      $server_ref[] = array('addr'=>$r[1], 'port'=>$r[2], 'forward'=>$r[3]);
+   if ( preg_match('#^\s*->\s+([^\s:]+):([^\s]+)\s+([^\s]+)\s+([0-9]+)#', $i, $r) ) {
+      $server_ref[] = array('addr'=>$r[1], 'port'=>$r[2], 'forward'=>$r[3], 'weight'=>$r[4]);
    }
 }
 proc_close($process);
