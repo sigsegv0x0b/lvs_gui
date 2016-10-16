@@ -174,6 +174,8 @@ function h_onclick(e)
 			{
 				console.log(c);
 				load_list();
+				
+				if ( req_error(c) ) return;
 			});
 			
 			break;
@@ -208,6 +210,8 @@ function h_onclick(e)
 				console.log(c);
 				load_list();
 				
+				if ( req_error(c) ) return;
+				
 				//make it easy to enter lots of ips quick
 				var addr = $(target).closest('form').find("input[id='addr']").val();
 				var regExp = /^(.+\.)/;
@@ -217,6 +221,8 @@ function h_onclick(e)
 				}
 				
 				$(target).closest('form').find("input[id='addr']").trigger('focus');
+				
+				
 				
 			});
 			break;
@@ -229,8 +235,12 @@ function h_onclick(e)
 			
 			$.ajax({url: 'api/' + action.action + backend, method: 'GET', data: action, dataType: 'json'}).done(function(c){
 				console.log(c);
-				$("div[id='add_cluster' input[id='cancel']").trigger('click');
 				load_list();
+				
+				if ( req_error(c) ) return;
+				
+				$("div[id='add_cluster' input[id='cancel']").trigger('click');
+				
 			});
 			
 			break;
@@ -248,6 +258,31 @@ function h_onclick(e)
 	
 	console.log(action);
 	
+}
+
+function req_error(c)
+{
+var tab = '     ';
+
+	if ( c.status ) {
+		var errmsg = "";
+		
+		if ( c.hasOwnProperty('msg') ) {
+			for(var x in c.msg) {
+				errmsg += tab + c.msg[x] + "\n";
+			}
+		}
+		
+		if ( c.hasOwnProperty('cmd') ) {
+			errmsg += "CMD:\n" + tab + c.cmd + "\n";
+		}
+		
+		alert("ERROR:\n" + errmsg);
+		
+		return true;
+	}
+	
+	return false;
 }
 
 function collect_values(dom)

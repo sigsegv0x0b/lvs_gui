@@ -1,14 +1,11 @@
 <?php
   require('lib.php');
 
-  echo "<PRE>";
-  print_r($_GET);
-
   $i = $_GET['input'];
   
   //going to sudo here, so validate stuff
   validate_ip($i['addr']);
-  ctype_digit($i['port']) OR trigger_error("[ {$i['port']} ] invalid port", E_USER_ERROR);
+  ctype_digit($i['port']) OR rq_error("[ port={$i['port']} ] invalid port");
   
   switch ( $i['scheduler'] ) {
     case 'rr':
@@ -22,12 +19,10 @@
     case 'nq':
       break;
     default:
-      trigger_error("[ {$i['scheduler']} ] invalid scheduler", E_USER_ERROR);
+      rq_error("[ scheduler={$i['scheduler']} ] invalid scheduler");
   }
   
   $cmd = "sudo /sbin/ipvsadm -A -t ".escapeshellarg("{$i['addr']}:{$i['port']}")." -s ".escapeshellarg($i['scheduler']).' 2>&1';
+  do_shell_cmd($cmd);  
   
-  exec($cmd, $out, $status);
-  print_r($out);
-  
-  echo json_encode( array('cmd'=>$cmd, 'status'=>$status, 'msg'=>$out) );
+  echo json_encode( array('cmd'=>$cmd, 'status'=>rq_error_count(), 'msg'=>rq_get_errors()) );

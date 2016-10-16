@@ -9,13 +9,13 @@
   
   //going to sudo here, so validate stuff
   validate_ip($i['addr']);
-  ctype_digit($i['port']) OR trigger_error("[ {$i['port']} ] invalid port", E_USER_ERROR);
+  ctype_digit($i['port']) OR rq_error("[ server_port={$i['port']} ] invalid port");
   
   validate_ip($c['addr']);
-  ctype_digit($c['port']) OR trigger_error("[ {$c['port']} ] invalid port", E_USER_ERROR);
+  ctype_digit($c['port']) OR rq_error("[ cluster_port={$c['port']} ] invalid port");
   
   if ( $i['weight'] ) {
-    ctype_digit($i['weight']) OR trigger_error("[ {$i['weight']} ] invalid weight", E_USER_ERROR);
+    ctype_digit($i['weight']) OR rq_error("[ weight={$i['weight']} ] invalid weight");
     $weight = ' -w '.escapeshellarg($i['weight']);
   } else {
     $weight = '';
@@ -33,10 +33,11 @@
       $forward = '-i';
       break;
     default:
-      trigger_error("[ {$i['forward']} ] invalid forwarding mode", E_USER_ERROR);
+      rq_error("[ forward={$i['forward']} ] invalid forwarding mode");
   }
   
   $cmd = 'sudo /sbin/ipvsadm -a -t '.escapeshellarg("{$c['addr']}:{$c['port']}").' -r '.escapeshellarg("{$i['addr']}:{$i['port']}")." $forward $weight 2>&1";
   exec($cmd, $out, $status);
-    
-  echo json_encode( array('cmd'=>$cmd, 'status'=>$status, 'msg'=>$out) );
+  
+  do_shell_cmd($cmd);    
+  echo json_encode( array('cmd'=>$cmd, 'status'=>rq_error_count(), 'msg'=>rq_get_errors()) );
