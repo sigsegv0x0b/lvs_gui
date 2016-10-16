@@ -49,6 +49,7 @@ function do_shell_cmd($cmd)
     exec($cmd, $out, $status);
     rq_error($out);
   }
+  else $cmd = false;
   
   return json_encode( array('cmd'=>$cmd, 'status'=>rq_error_count(), 'msg'=>rq_get_errors()) );
     
