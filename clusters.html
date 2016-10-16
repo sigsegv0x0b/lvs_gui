@@ -46,6 +46,11 @@ tr[id="cluster_spacer"] td {
 table {
 //	border-collapse: collapse;
 }
+
+.clicky {
+	color: blue;
+	cursor: pointer;
+}
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 </head>
@@ -56,7 +61,7 @@ table {
 	<td id="addr"></td>
 	<td id="port"></td>
 	<td id="scheduler"></td>
-	<td onclick="h_onclick(event)"><span action="add_server_form">Add</span></td>
+	<td onclick="h_onclick(event)"><span action="add_server_form" class="clicky">[Add Server]</span></td>
 </tr>
 <tr>
 	<td valign=top><h4>Servers<h4></td> <td colspan=4>
@@ -74,7 +79,7 @@ table {
 					<td id="port"></td>
 					<td id="forward"></td>
 					<td id="weight"></td>
-					<td id="action" onclick="h_onclick(event)"><span action="delete_server">Del</span></td>
+					<td id="action" onclick="h_onclick(event)"><span action="delete_server" class="clicky">[Del Server]</span></td>
 				</tr>
 			</template>
 		</table>
