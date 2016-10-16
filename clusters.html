@@ -1,10 +1,6 @@
 	<html>
 <head>
 <style>
-.form {
-	display: table;
-}
-
 .formcap {
 	//float: left;
 	display: table-cell;
@@ -20,6 +16,29 @@
 	display: table-row;
 }
 
+#cluster_list th {
+	border-bottom: 1px solid;
+	background: GhostWhite;
+}
+
+#servers th {
+	border-bottom: 1px solid;
+}
+
+form {
+//	display: table;
+	background: inherit;
+}
+
+div[c_level="editor"] {
+	border: 1px dashed;
+	background: WhiteSmoke;
+}
+
+#input_area {
+	border: 1px dashed;
+}
+
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 </head>
@@ -33,9 +52,8 @@
 	<td onclick="h_onclick(event)"><span action="add_server_form">Add</span></td>
 </tr>
 <tr>
-	<th valign=top>Servers</th>
-	<td colspan=4>
-		<table border=1 id="servers">
+	<td valign=top><h4>Servers<h4></td> <td colspan=4>
+		<table id="servers" class="servers">
 			<tr>
 				<th>Server</th>
 				<th>Port</th>
@@ -58,7 +76,6 @@
 </tr>
 </template>
 <div id="input_area">
-
 	<div c_level="editor" id="add_server" class="table" style="display:none">
 		<form name="add_server_form">
 		<h3 id="add_server_cap">Add Server: <label id="addr"></label>:<label id="port"></label></h3>
@@ -298,7 +315,7 @@ $(document).ready(function()
 </script>
 <input onclick="load_list()" value="reload" type="button">
 <input onclick="h_onclick(event)" action="add_cluster_form" value="Add Cluster" type="button">
-<table id="cluster_list" border=1>
+<table id="cluster_list">
 <tr id="heading">
 	<th>Protocol</th>
 	<th>Address</th>
