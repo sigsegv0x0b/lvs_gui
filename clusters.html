@@ -1,0 +1,233 @@
+<html>
+<head>
+<style>
+.form {
+	display: table;
+}
+
+.formcap {
+	//float: left;
+	display: table-cell;
+}
+
+.forminput {
+	//float: left;
+	display: table-cell;
+}
+
+.formrow {
+	//clear: both;
+	display: table-row;
+}
+
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+<template id="cluster_row">
+<tr id="cluster">
+	<td id="proto"></td>
+	<td id="addr"></td>
+	<td id="port"></td>
+	<td id="algo"></td>
+	<td onclick="h_onclick(event)"><span action="add_server_form">Add</span></td>
+</tr>
+<tr>
+	<th valign=top>Servers</th>
+	<td colspan=4>
+		<table border=1 id="servers">
+			<tr>
+				<th>Server</th>
+				<th>Port</th>
+				<th>Forward</th>
+				<th>Action</th>
+			</tr>
+			<template id="server_row">
+				<tr id="server">
+					<td id="addr"></td>
+					<td id="port"></td>
+					<td id="forward"></td>
+					<td id="action" onclick="h_onclick(event)"><span applyto="server" action="delete_server">Del</span></td>
+				</tr>
+			</template>
+		</table>
+	</td>
+
+</tr>
+</template>
+
+<div id="add_server" class="table">
+<form name="add_server_form">
+<h3 id="add_server_cap">Add Server: <label id="addr"></label>:<label id="port"></label></h3>
+<div class="formrow">
+	<div class="formcap">Address:</div>
+	<div class="forminput"><input type="text" id="addr" size=10></div>
+</div>
+
+<div class="formrow">
+	<div class="formcap">Port:</div> 
+	<div class="forminput"><input type="text" id="port" size=5></div>
+</div>
+
+<div class="formrow">
+	<div class="formcap"">Forward:</div>
+	<div class="forminput"><select id="forward"><option value="Route">Direct_Route</option><option value="Masq">Masq/Nat</option><option value="Tunnel">Tunneling</option></select></div>
+</div>
+
+<div class="formrow" style="border: 1px solid red; height: 10px;"></div>
+
+<div class="formrow" style="column-span: all">
+	<div class="formcap"></div>
+	<div align=left class="forminput"><input action="cancel_form" onclick="h_onclick(event)" type="button" id="cancel" value="Cancel"> <input action="add_server" type="button" onclick="h_onclick(event)" id="add" value="Add"></div>
+</div>
+
+</form>
+</div>
+
+<script>
+var lvs;
+
+var backend = '.php';
+var please_wait = true;
+
+
+function h_onclick(e)
+{
+	
+	var target = $(e.target);
+	action = { 'action': $(target).attr('action') };
+	
+	switch ( $(target).attr('action') ) {
+		case 'delete_server':
+			var ref = $(e.target).closest('tr').data('ref');
+			action['ref'] = ref;
+			
+			$.ajax({url: 'api/' +action.action + backend  , method: 'GET', data: action, dataType: 'json'}).done(function(c)
+			{
+				console.log(c);
+				load_list();
+			});
+			
+			break;
+		case 'add_server_form':
+			var ref = $(e.target).closest('tr').data('ref');
+			//console.log(ref);
+			$("div[id='add_server']").find('form').data('ref', ref);
+			
+			fill_fields(ref.cluster, $('#add_server_cap label'));
+			fill_fields(ref.cluster, $("div[id='add_server'] input[id='port']"));
+			if ( ref.cluster.servers.length ) {
+				fill_fields(ref.cluster.servers[0], $("#add_server select[id='forward']"));
+			}
+			break;
+		case 'add_server':
+			var input = {};
+			$(target).closest('form').find("input[type='text'], select").each(function(){
+				input[$(this).attr('id')] = $(this).val();
+			});
+			
+			action['input'] = input;
+			action['ref'] = $(target).closest("form").data('ref');
+			
+			console.log('PREAJAX');
+			
+			$.ajax({url: 'api/' +action.action + backend  , method: 'GET', data: action, dataType: 'json'}).done(function(c)
+			{
+				console.log(c);
+				load_list();
+				
+				
+				//make it easy to enter lots of ips quick
+				var addr = $(target).closest('form').find("input[id='addr']").val();
+				var regExp = /^(.+\.)/;
+				var match = regExp.exec(addr);
+				if ( match.length > 1 ) {
+					$(target).closest('form').find("input[id='addr']").val(match[1]);
+				}
+				
+				$(target).closest('form').find("input[id='addr']").trigger('focus');
+				
+			});
+						
+			break;
+		case 'cancel_form':
+			var form = $(target).closest('form');
+			$(form).removeData('ref');
+			$(form).find('input[type=text],select').each(function(){
+				$(this).val('')
+			});
+			break;
+	}
+	
+	console.log(action);
+	
+}
+
+
+function fill_fields(obj, dom)
+{
+	dom.each(function() {
+		var id = $(this).attr('id');
+		if ( obj.hasOwnProperty(id) ) {
+			if ( $(this).is('input') || $(this).is('select') ) {
+				$(this).val(obj[id]);
+			} else {
+				$(this).text(obj[id]);
+			}
+		}
+	});
+}
+
+function load_list()
+{
+	$("#cluster_list tr[id!='heading']").remove();
+	
+	$.ajax({url: 'api/list' + backend, method: 'GET', data: {action: 'list'}, dataType: 'json'}).done(function(c){
+		lvs = c;
+		var t_cluster_row = document.querySelector('#cluster_row');
+		lvs.clusters.forEach(function(x){
+			var c_clone = document.importNode(t_cluster_row.content, true);
+
+			fill_fields(x ,$(c_clone).find("tr[id='cluster'] td"));
+			
+			$(c_clone).find('#cluster').data('ref', {'cluster': x});
+			var t_server_row = $(c_clone).find('#server_row').get(0);
+			
+			x.servers.forEach(function(y){
+				var s_clone = document.importNode(t_server_row.content, true);
+				var small_cluster = $.extend({}, x);
+				delete small_cluster.servers;
+							
+				$(s_clone).find('#server').data('ref', {'server': y, 'cluster': small_cluster});
+				fill_fields(y, $(s_clone).find("tr[id='server'] td"));
+				$(c_clone).find('#servers').append(s_clone);
+			});
+			
+			$('#cluster_list').append(c_clone);
+		});
+		please_wait = false;
+	});
+
+}
+
+$(document).ready(function()
+{
+	load_list();
+});
+
+</script>
+<input onclick="load_list()" value="reload" type="button">
+<table id="cluster_list" border=1>
+<tr id="heading">
+	<th>Protocol</th>
+	<th>Address</th>
+	<th>Port</th>
+	<th>Algorithm</th>
+	<th>Action</th>
+</tr>
+
+</table>
+
+</body>
+
+</html>
