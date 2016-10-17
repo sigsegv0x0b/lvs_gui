@@ -49,6 +49,7 @@ function do_shell_cmd($cmd)
     if ( strpos($cmd, ' #__DO_NOT_EXEC__# ') === false ) {
       exec($cmd, $out, $status);
       rq_error($out);
+      if ( ! $status ) save_rules();
     }
     else {
       rq_error('executing of command not allowed');
@@ -81,4 +82,11 @@ function get_proto_switch($v)
   
   trigger_error("SHOULD NEVER REACH THIS CODE", E_USER_ERROR);
   exit(1);
+}
+
+function save_rules()
+{
+  $cmd = 'sudo /etc/init.d/ipvsadm save 2>&1';
+  exec($cmd, $out, $status);
+  if ( $status ) rq_error(array('unable to save rules', $out));
 }
