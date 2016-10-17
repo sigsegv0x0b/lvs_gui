@@ -61,7 +61,7 @@ table {
 	<td id="addr"></td>
 	<td id="port"></td>
 	<td id="scheduler"></td>
-	<td onclick="h_onclick(event)"><span action="add_server_form" class="clicky">[Add Server]</span></td>
+	<td onclick="h_onclick(event)"><span action="add_server_form" class="clicky">[Add Server]</span><span action="delete_cluster" class="clicky">[Del Cluster]</span></td>
 </tr>
 <tr>
 	<td valign=top><h4>Servers<h4></td> <td colspan=4>
@@ -128,6 +128,17 @@ table {
 		<form name="add_cluster_form">
 		<h3 id="add_server_cap">Add Cluster</h3>
 		<div class="formrow">
+			<div class="formcap">Protocol:</div>
+			<div class="forminput">
+				<select id="proto">
+					<option value="TCP">TCP</option>
+					<option value="UDP">UDP</option>
+					<option value="FWMARK">FWMARK</option>
+					
+				</select>
+			</div>
+		</div>
+		<div class="formrow">
 			<div class="formcap">Address:</div>
 			<div class="forminput"><input type="text" id="addr" size=10></div>
 		</div>
@@ -185,8 +196,18 @@ function h_onclick(e)
 			var ref = $(e.target).closest('tr').data('ref');
 			action['ref'] = ref;
 			
-			$.ajax({url: 'api/' +action.action + backend  , method: 'GET', data: action, dataType: 'json'}).done(function(c)
+			$.ajax({url: 'api/' + action.action + backend  , method: 'GET', data: action, dataType: 'json'}).done(function(c)
 			{
+				console.log(c);
+				load_list();
+				
+				if ( req_error(c) ) return;
+			});
+			break;
+		case 'delete_cluster':
+			var ref = $(e.target).closest('tr').data('ref');
+			action['ref'] = ref;
+			$.ajax({url: 'api/' + action.action + backend, method: 'GET', data: action, dataType: 'json'}).done(function(c){
 				console.log(c);
 				load_list();
 				

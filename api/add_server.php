@@ -1,12 +1,12 @@
 <?php
   require('lib.php');
 
-  #echo "<PRE>";
-  #print_r($_GET);
+#  echo "<PRE>";
+#  print_r($_GET);
 
   $c = $_GET['ref']['cluster'];
   $i = $_GET['input'];
-  
+#  exit();
   //going to sudo here, so validate stuff
   validate_ip($i['addr']);
   ctype_digit($i['port']) OR rq_error("[ server_port={$i['port']} ] invalid port");
@@ -21,20 +21,20 @@
     $weight = '';
   }
 
-  $forward = '';
-  switch ( $i['forward'] ) {
-    case 'Masq':
+  $forward = false;
+  switch ( strtolower($i['forward']) ) {
+    case 'masq':
       $forward = '-m';
       break;
-    case 'Route':
+    case 'route':
       $forward = '-g';
       break;
-    case 'Tunnel':
+    case 'tunnel':
       $forward = '-i';
       break;
     default:
       rq_error("[ forward={$i['forward']} ] invalid forwarding mode");
   }
   
-  $cmd = 'sudo /sbin/ipvsadm -a -t '.escapeshellarg("{$c['addr']}:{$c['port']}").' -r '.escapeshellarg("{$i['addr']}:{$i['port']}")." $forward $weight 2>&1";
+  $cmd = 'sudo /sbin/ipvsadm -a '.get_proto_switch($c['proto']).' '.escapeshellarg("{$c['addr']}:{$c['port']}").' -r '.escapeshellarg("{$i['addr']}:{$i['port']}")." $forward $weight 2>&1";
   echo do_shell_cmd($cmd);    

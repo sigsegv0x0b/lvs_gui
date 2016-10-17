@@ -22,6 +22,6 @@
       rq_error("[ scheduler={$i['scheduler']} ] invalid scheduler");
   }
   
-  $cmd = "sudo /sbin/ipvsadm -A -t ".escapeshellarg("{$i['addr']}:{$i['port']}")." -s ".escapeshellarg($i['scheduler']).' 2>&1';
+  $cmd = 'sudo /sbin/ipvsadm -A '.get_proto_switch($i['proto']).' '.escapeshellarg("{$i['addr']}:{$i['port']}")." -s ".escapeshellarg($i['scheduler']).' 2>&1';
   echo do_shell_cmd($cmd);  
   

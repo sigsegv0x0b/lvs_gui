@@ -46,11 +46,39 @@ function rq_error_count()
 function do_shell_cmd($cmd)
 {
   if ( !rq_error() ) {
-    exec($cmd, $out, $status);
-    rq_error($out);
+    if ( strpos($cmd, ' #__DO_NOT_EXEC__# ') === false ) {
+      exec($cmd, $out, $status);
+      rq_error($out);
+    }
+    else {
+      rq_error('executing of command not allowed');
+      $cmd = false;
+    }
+    
   }
   else $cmd = false;
   
   return json_encode( array('cmd'=>$cmd, 'status'=>rq_error_count(), 'msg'=>rq_get_errors()) );
     
+}
+
+function get_proto_switch($v)
+{
+  switch ( strtolower($v) ) {
+    case 'tcp':
+      return '-t';
+      break;
+    case 'udp':
+      return '-u';
+      break;
+    case 'fwmark':
+      return '-f';
+      break;
+    default:
+      rq_error("[ proto={$i['proto']} ] invalid protocol");
+      return ' #__DO_NOT_EXEC__# ';
+  }
+  
+  trigger_error("SHOULD NEVER REACH THIS CODE", E_USER_ERROR);
+  exit(1);
 }
